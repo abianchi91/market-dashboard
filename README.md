@@ -2,6 +2,8 @@
 
 A premium, minimalist, and real-time markets dashboard designed for easy monitoring. It is a Progressive Web App (PWA) that can be installed on mobile or desktop for a full-screen, native-like experience.
 
+## 🔗 [Live Demo](https://abianchi91.github.io/market-dashboard/)
+
 ## Features
 - **Real-time Data**: Fetches data directly from Public Market Quote Services.
 - **Auto-Refresh**: Automatically updates all market quotes every 60 seconds.
