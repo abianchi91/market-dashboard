@@ -267,8 +267,8 @@
       const currentY = parseFloat(document.body.style.transform.replace('translateY(', ''));
       document.body.style.transform = '';
       if (currentY > 60) {
-        ptr.textContent = "Updating...";
-        init();
+        ptr.textContent = "Reloading...";
+        location.reload();
       }
       setTimeout(() => { ptr.style.opacity = 0; }, 300);
       moveY = 0;
