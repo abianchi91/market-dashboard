@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Markets</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0d0d0d">
@@ -24,10 +24,12 @@
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       background: #0d0d0d;
       color: #e0e0e0;
-      padding: 8px 10px;
+      padding: calc(6px + env(safe-area-inset-top)) 10px calc(6px + env(safe-area-inset-bottom));
       display: flex;
       flex-direction: column;
+      height: 100vh;
       height: 100dvh;
+      overflow: hidden;
       overscroll-behavior: none;
     }
 
@@ -55,9 +57,10 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      gap: 4px;
+      justify-content: center;
+      gap: 8px;
       transition: opacity 0.3s ease;
+      overflow-y: auto;
     }
 
     .region-row {
