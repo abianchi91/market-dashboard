@@ -18,6 +18,7 @@
 
     html, body {
       height: 100%;
+      overflow: hidden;
     }
 
     body {
@@ -25,56 +26,47 @@
       background: #0d0d0d;
       color: #e0e0e0;
       padding: calc(6px + env(safe-area-inset-top)) 10px calc(6px + env(safe-area-inset-bottom));
-      display: flex;
-      flex-direction: column;
-      justify-content: safe center;
-      align-items: center;
-      min-height: 100dvh;
-      overflow: hidden;
-      overscroll-behavior: none;
+      display: block;
+      margin: 0;
+      -webkit-tap-highlight-color: transparent;
     }
 
     #dashboard {
-      display: flex;
-      flex-direction: column;
       max-width: 640px;
       width: 100%;
-      margin: 0 auto;
+      margin: 10px auto 0 auto;
     }
 
     h1 {
       text-align: center;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.18em;
+      font-size: 11px;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
-      color: #3a3a3a;
-      margin-bottom: 12px;
-      flex-shrink: 0;
+      color: #2a2a2a;
+      margin-bottom: 8px;
     }
 
     #rows {
-      display: grid;
-      gap: 12px;
+      display: block;
       transition: opacity 0.3s ease;
     }
 
     .region-row {
-      display: flex;
-      flex-direction: column;
-      padding: 2px 0;
+      display: block;
+      margin-bottom: 6px;
       border-bottom: 1px solid #19191944;
+      padding-bottom: 2px;
     }
 
     .region-row:last-child { border-bottom: none; }
 
     .region-label {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: #383838;
-      margin-bottom: 3px;
+      color: #333;
+      margin-bottom: 2px;
     }
 
     .chips {
@@ -111,10 +103,9 @@
 
     #status {
       text-align: center;
-      font-size: 11px;
+      font-size: 10px;
       color: #333;
-      margin-top: 12px;
-      letter-spacing: 0.05em;
+      margin-top: 8px;
     }
   </style>
 </head>
