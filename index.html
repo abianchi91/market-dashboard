@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Markets</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0d0d0d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="icon" type="image/png" href="icon.png">
+  <meta name="apple-mobile-web-app-title" content="Markets">
+  <meta name="description" content="Real-time markets dashboard">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #0d0d0d;
+      color: #e0e0e0;
+      padding: 12px 10px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100dvh;
+    }
+
+    #dashboard {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 640px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #3a3a3a;
+      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+
+    #rows {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      gap: 10px;
+    }
+
+    .region-row {
+      display: flex;
+      flex-direction: column;
+      padding: 5px 0;
+      border-bottom: 1px solid #19191944;
+    }
+
+    .region-row:last-child { border-bottom: none; }
+
+    .region-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #383838;
+      margin-bottom: 6px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      width: 100%;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+      cursor: default;
+      transition: opacity 0.15s;
+    }
+
+    .chip:hover { opacity: 0.75; transform: scale(1.02); }
+
+    .chip.gain { background: rgba(76, 175, 118, 0.13); color: #4caf76; }
+    .chip.loss { background: rgba(224, 82,  82,  0.13); color: #e05252; }
+    .chip.unch { background: #161616; color: #444; }
+
+    .chip-emoji { font-size: 17px; line-height: 1; }
+    .chip-pct   { font-weight: 700; }
+
+    #rows {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      gap: 10px;
+      transition: opacity 0.3s ease;
+    }
+
+    #rows.updating {
+      opacity: 0.5;
+    }
+
+    #status {
+      text-align: center;
+      font-size: 11px;
+      color: #333;
+      margin-top: 12px;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+
+<div id="dashboard">
+  <h1>Markets</h1>
+  <div id="rows"></div>
+  <div id="status">Loading…</div>
+</div>
+
+<script>
+  let config = { regions: {}, symbolLabel: {}, symbolEmoji: {} };
+
+  async function fetchMarketData(symbols) {
+    const url = `https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol?symbols=${encodeURIComponent(symbols.join("|"))}&requestMethod=itv&noform=1&partnerId=2&fund=1&exthrs=1&output=json&events=1`;
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0",
+        "Accept": "application/json, */*",
+        "Referer": "https://www.cnbc.com/"
+      }
+    });
+    const data = await res.json();
+    return data.FormattedQuoteResult.FormattedQuote;
+  }
+
+  function isStale(lastTime) {
+    return !lastTime || (new Date() - new Date(lastTime)) >= 3600000;
+  }
+
+  async function init() {
+    try {
+      if (Object.keys(config.regions).length === 0) {
+        const configRes = await fetch('config.json');
+        if (!configRes.ok) throw new Error("Config not found");
+        config = await configRes.json();
+      }
+    } catch (e) {
+      document.getElementById("status").textContent = "Configuration error";
+      return;
+    }
+
+    const container = document.getElementById("rows");
+    container.classList.add("updating");
+
+    try {
+      const allSymbols = Object.values(config.regions).flat();
+      const quotes = await fetchMarketData(allSymbols);
+
+      const quoteMap = {};
+      quotes.forEach(q => quoteMap[q.symbol] = q);
+
+      container.innerHTML = ""; // Clear for refresh
+
+      for (const [region, symbols] of Object.entries(config.regions)) {
+        const row = document.createElement("div");
+        row.className = "region-row";
+
+        const label = document.createElement("div");
+        label.className = "region-label"
+        label.textContent = region;
+
+        const chips = document.createElement("div");
+        chips.className = "chips";
+
+        for (const sym of symbols) {
+          const q = quoteMap[sym];
+          if (!q || !q.change_pct) continue;
+
+          const stale  = isStale(q.last_time);
+          const up     = q.changetype === "UP";
+          const cls    = stale ? "unch" : (up ? "gain" : "loss");
+          const arrow  = stale ? "" : (up ? "▲" : "▼");
+          const emoji  = config.symbolEmoji[sym] ?? "";
+          const lbl    = config.symbolLabel[sym] ?? "";
+
+          const chip = document.createElement("div");
+          chip.className = `chip ${cls}`;
+          chip.title = q.name || q.shortName || sym;
+          chip.innerHTML = `<span class="chip-emoji">${emoji}</span>${lbl ? `<span style="font-size:11px;opacity:.7">${lbl}</span>` : ""}<span class="chip-pct">${arrow}${q.change_pct}</span>`;
+          chips.appendChild(chip);
+        }
+
+        row.appendChild(label);
+        row.appendChild(chips);
+        container.appendChild(row);
+      }
+
+      const now = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      document.getElementById("status").textContent = `Updated ${now}`;
+    } catch (err) {
+      console.error("Fetch error:", err);
+      document.getElementById("status").textContent = "Market data unavailable";
+    } finally {
+      container.classList.remove("updating");
+    }
+  }
+
+  init();
+  setInterval(init, 60000);
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+</script>
+
+</body>
+</html>

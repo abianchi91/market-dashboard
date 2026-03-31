@@ -1,0 +1,31 @@
+{
+  "regions": {
+    "Futures":     ["@SP.1", "@ND.1", ".VIX"],
+    "Asia":        [".SSEC", ".N225", ".NSEI", ".HSI", ".TWII", ".KS11", ".AXJO"],
+    "Americas":    [".SPX",  ".IXIC", ".GSPTSE", "IBOV", ".MXX", ".MERV"],
+    "Europe":      [".FTSE", ".FCHI", ".GDAXI", ".SSMI", ".AEX", ".FTMIB", ".IBEX"],
+    "Commodities": ["BTC.CM=", "@GC.1", "@CL.1", "@SI.1", "@HG.1", "@NG.1", "@PL.1"]
+  },
+  "symbolLabel": {
+    "@SP.1": "S&P",  "@ND.1": "NQ",      ".VIX":    "VIX",
+    ".N225":  "Nikkei", ".SSEC": "SSE",   ".NSEI":   "Sensex",
+    ".AXJO":  "ASX",    ".HSI":  "HSI",    ".KS11":   "KOSPI",   ".TWII": "TAIEX",
+    ".SPX":   "S&P500", ".IXIC": "Nasdaq", ".GSPTSE": "TSX",
+    "IBOV":   "Bovesp", ".MXX":  "IPC",    ".MERV":   "Merval",
+    ".FTMIB": "MIB",    ".GDAXI":"DAX",    ".FCHI":   "CAC40",
+    ".FTSE":  "FTSE",   ".IBEX": "IBEX",   ".AEX":    "AEX",     ".SSMI": "SMI",
+    "BTC.CM=":"BTC",    "@GC.1": "Gold",   "@SI.1":   "Silver",
+    "@HG.1":  "Copper", "@PL.1": "Plat",   "@CL.1":   "WTI",     "@NG.1": "NatGas"
+  },
+  "symbolEmoji": {
+    "@SP.1":   "🇺🇸", "@ND.1":   "🇺🇸", ".VIX":    "🇺🇸",
+    ".N225":   "🇯🇵", ".SSEC":   "🇨🇳", ".NSEI":   "🇮🇳",
+    ".AXJO":   "🇦🇺", ".HSI":    "🇭🇰", ".KS11":   "🇰🇷", ".TWII": "🇹🇼",
+    ".SPX":    "🇺🇸", ".IXIC":   "🇺🇸", ".GSPTSE": "🇨🇦",
+    "IBOV":    "🇧🇷", ".MXX":    "🇲🇽", ".MERV":   "🇦🇷",
+    ".FTMIB":  "🇮🇹", ".GDAXI":  "🇩🇪", ".FCHI":   "🇫🇷",
+    ".FTSE":   "🇬🇧", ".IBEX":   "🇪🇸", ".AEX":    "🇳🇱", ".SSMI": "🇨🇭",
+    "BTC.CM=": "₿",   "@GC.1":   "🥇", "@SI.1":   "🥈",
+    "@HG.1":   "🥉",  "@PL.1":   "✨", "@CL.1":   "🛢️", "@NG.1": "🔥"
+  }
+}
