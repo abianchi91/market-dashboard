@@ -25,48 +25,59 @@
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       background: #0d0d0d;
       color: #e0e0e0;
-      padding: calc(6px + env(safe-area-inset-top)) 10px calc(6px + env(safe-area-inset-bottom));
-      display: block;
+      padding: calc(10px + env(safe-area-inset-top)) 10px calc(10px + env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
       margin: 0;
-      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior-y: contain;
+      transition: transform 0.2s cubic-bezier(0, 0, 0.2, 1);
     }
 
     #dashboard {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
       max-width: 640px;
       width: 100%;
-      margin: 10px auto 0 auto;
+      margin: 0 auto;
     }
 
     h1 {
       text-align: center;
-      font-size: 11px;
-      letter-spacing: 0.15em;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: #2a2a2a;
-      margin-bottom: 8px;
+      color: #313131;
+      margin-bottom: 12px;
     }
 
     #rows {
-      display: block;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      gap: 10px;
       transition: opacity 0.3s ease;
     }
 
     .region-row {
-      display: block;
-      margin-bottom: 4px;
+      display: flex;
+      flex-direction: column;
+      padding: 4px 0;
       border-bottom: 1px solid #19191944;
-      padding-bottom: 2px;
     }
 
     .region-row:last-child { border-bottom: none; }
 
     .region-label {
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
-      color: #333;
-      margin-bottom: 2px;
+      color: #383838;
+      margin-bottom: 6px;
     }
 
     .chips {
@@ -103,9 +114,26 @@
 
     #status {
       text-align: center;
-      font-size: 10px;
+      font-size: 11px;
       color: #333;
-      margin-top: 8px;
+      margin-top: 12px;
+      letter-spacing: 0.05em;
+    }
+
+    #ptr {
+      position: absolute;
+      top: 0; left: 0; width: 100%;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: translateY(-100%);
+      font-size: 12px;
+      color: #4caf76;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      pointer-events: none;
     }
   </style>
 </head>
@@ -214,7 +242,41 @@
       window.location.reload();
     });
   }
+
+  // Pull to refresh logic
+  let startY = 0;
+  let moveY = 0;
+  const ptr = document.getElementById('ptr');
+
+  window.addEventListener('touchstart', e => {
+    startY = e.touches[0].pageY;
+  }, { passive: true });
+
+  window.addEventListener('touchmove', e => {
+    moveY = e.touches[0].pageY - startY;
+    if (moveY > 0 && window.scrollY === 0) {
+      const slowY = Math.pow(moveY, 0.7) * 2.5; 
+      document.body.style.transform = `translateY(${slowY}px)`;
+      ptr.style.opacity = Math.min(slowY / 60, 1);
+      ptr.textContent = slowY > 60 ? "Release to Refresh" : "Pull to Refresh";
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchend', () => {
+    if (moveY > 0) {
+      const currentY = parseFloat(document.body.style.transform.replace('translateY(', ''));
+      document.body.style.transform = '';
+      if (currentY > 60) {
+        ptr.textContent = "Updating...";
+        init();
+      }
+      setTimeout(() => { ptr.style.opacity = 0; }, 300);
+      moveY = 0;
+    }
+  });
 </script>
+
+<div id="ptr">Pull to Refresh</div>
 
 </body>
 </html>
